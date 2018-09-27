@@ -151,5 +151,14 @@ function draw() {
   fill(255,0,0);
   // Draw the enemy as a circle
   ellipse(enemyX,enemyY,enemySize,enemySize);
+// score displayer
+  score();
+}
 
+//this displays the score
+function score (){
+  fill(0);
+  textSize(20);
+  textAlign(CENTER);
+  text("Score: " +dodges, 250, 20);
 }
