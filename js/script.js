@@ -70,19 +70,28 @@ function setup() {
 // Handle moving the avatar and enemy and checking for dodges and
 // game over situations.
 function draw() {
-//game logic
-  logic();
-// star background
-  image(spaceBackground,width/2,height/2);
-// draw player
-  image(spaceship,avatarX,avatarY,avatarSize,avatarSize);
+  if(dodges < 15){
+  //game logic
+    logic();
+  // star background
+    image(spaceBackground,width/2,height/2);
+  // draw player
+    image(spaceship,avatarX,avatarY,avatarSize,avatarSize);
 
-// Draw meteor
-for(var i = 0; i < numberOfEnemies; i = i+1){
-  image(meteor, enemyX[i],enemyY[i],enemySize,enemySize);
-}
-// score displayer
-  score();
+  // Draw meteor
+    for(var i = 0; i < numberOfEnemies; i = i+1){
+      image(meteor, enemyX[i],enemyY[i],enemySize,enemySize);
+    }
+  // score displayer
+    score();
+  }
+  else {
+    textSize(75);
+    text("You Win!! Press UP To Play Again!",width/2,height/2);
+    if(keyIsDown(UP_ARROW)) {
+        reset();
+   }
+  }
 
 }
 
@@ -175,15 +184,13 @@ function movePlayer(){
   // Move the avatar according to its calculated velocity
   avatarX = avatarX + avatarVX;
   avatarY = avatarY + avatarVY;
-
-
 }
 
 //dodged all meteor
 function dodged(){
 //changes avatar speed and size after dodge
-  avatarSpeed = random(1,30);
-  avatarSize = random(50, 250);
+  avatarSpeed = random(1,60);
+  avatarSize = random(25, 350);
   // This means the player dodged so update its dodge statistic
   dodges = dodges + 1;
 
@@ -194,7 +201,7 @@ function dodged(){
   // Increase the enemy's speed to make the game harder
   enemySpeed = enemySpeed + enemySpeedIncrease;
 //dodges 5, resets counter and spawns enemy
-  if(spawnCounter == 5){
+  if(spawnCounter == 3){
     spawnCounter = 0;
     numberOfEnemies = numberOfEnemies + 1
     enemyX.push(0);
