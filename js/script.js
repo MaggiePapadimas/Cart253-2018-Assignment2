@@ -10,7 +10,7 @@ Starter code for exercise 2.
 // The position and size of our avatar circle
 var avatarX;
 var avatarY;
-var avatarSize = 50;
+var avatarSize = 100;
 
 // The speed and velocity of our avatar circle
 var avatarSpeed = 10;
@@ -32,13 +32,24 @@ var enemySpeedIncrease = 0.5;
 
 // How many dodges the player has made
 var dodges = 0;
-
+//background
+var spaceBackground;
+//enemy
+var meteor;
+//player
+var spaceship;
+//images
+function preload() {
+  spaceBackground = loadImage("assets/images/background.jpg");
+  spaceship = loadImage("assets/images/spaceship.jpg");
+  meteor = loadImage("assets/images/meteor.png");
+}
 // setup()
 //
 // Make the canvas, position the avatar and anemy
 function setup() {
   // Create our playing area
-  createCanvas(500,500);
+  createCanvas(1280,700);
 
   // Put the avatar in the centre
   avatarX = width/2;
@@ -50,6 +61,8 @@ function setup() {
 
   // No stroke so it looks cleaner
   noStroke();
+
+  imageMode(CENTER);
 }
 
 // draw()
@@ -57,9 +70,29 @@ function setup() {
 // Handle moving the avatar and enemy and checking for dodges and
 // game over situations.
 function draw() {
-  // A pink background
-  background(255,220,220);
+//game logic
+  logic();
+// star background
+  image(spaceBackground,width/2,height/2);
+// draw player
+  image(spaceship,avatarX,avatarY,avatarSize,avatarSize);
 
+// Draw meteor
+  image(meteor,enemyX,enemyY,enemySize,enemySize);
+
+// score displayer
+  score();
+}
+
+//this displays the score
+function score (){
+  fill(255);
+  textSize(20);
+  textAlign(CENTER);
+  text("Score: " +dodges, width/2, 20);
+}
+//function does game logic
+function logic() {
   // Default the avatar's velocity to 0 in case no key is pressed this frame
   avatarVX = 0;
   avatarVY = 0;
@@ -142,23 +175,4 @@ function draw() {
   // Display the current number of successful in the console
   console.log(dodges);
 
-  // The player is black
-  fill(0);
-  // Draw the player as a circle
-  ellipse(avatarX,avatarY,avatarSize,avatarSize);
-
-  // The enemy is red
-  fill(255,0,0);
-  // Draw the enemy as a circle
-  ellipse(enemyX,enemyY,enemySize,enemySize);
-// score displayer
-  score();
-}
-
-//this displays the score
-function score (){
-  fill(0);
-  textSize(20);
-  textAlign(CENTER);
-  text("Score: " +dodges, 250, 20);
 }
