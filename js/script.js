@@ -142,6 +142,9 @@ function reset(){
   dodges = 0;
   spawnCounter = 0;
   numberOfEnemies = 1;
+// resets avatar speed and size
+  avatarSize = 100;
+  avatarSpeed = 10;
 }
 //moves the player
 function movePlayer(){
@@ -176,10 +179,14 @@ function movePlayer(){
 
 }
 
-//adds 1 meteor after every 5 points
+//dodged all meteor
 function dodged(){
+//changes avatar speed and size after dodge
+  avatarSpeed = random(1,30);
+  avatarSize = random(50, 250);
   // This means the player dodged so update its dodge statistic
   dodges = dodges + 1;
+
   spawnCounter =  spawnCounter + 1;
   // Tell them how many dodges they have made
   console.log(dodges + " DODGES!");
