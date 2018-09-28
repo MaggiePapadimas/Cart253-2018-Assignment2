@@ -18,6 +18,7 @@ var avatarVX = 0;
 var avatarVY = 0;
 
 // The position and size of the enemy circle
+//enemy postion array
 var enemyX;
 var enemyY;
 var enemySize = 50;
@@ -38,6 +39,10 @@ var spaceBackground;
 var meteor;
 //player
 var spaceship;
+//spawnCounter
+var spawnCounter = 0;
+var numberOfEnemies
+
 //images
 function preload() {
   spaceBackground = loadImage("assets/images/background.jpg");
@@ -51,18 +56,13 @@ function setup() {
   // Create our playing area
   createCanvas(1280,700);
 
-  // Put the avatar in the centre
-  avatarX = width/2;
-  avatarY = height/2;
-
-  // Put the enemy to the left at a random y coordinate within the canvas
-  enemyX = 0;
-  enemyY = random(0,height);
-
   // No stroke so it looks cleaner
   noStroke();
 
   imageMode(CENTER);
+
+  reset();
+
 }
 
 // draw()
@@ -78,10 +78,12 @@ function draw() {
   image(spaceship,avatarX,avatarY,avatarSize,avatarSize);
 
 // Draw meteor
-  image(meteor,enemyX,enemyY,enemySize,enemySize);
-
+for(var i = 0; i < numberOfEnemies; i = i+1){
+  image(meteor, enemyX[i],enemyY[i],enemySize,enemySize);
+}
 // score displayer
   score();
+
 }
 
 //this displays the score
@@ -93,6 +95,56 @@ function score (){
 }
 //function does game logic
 function logic() {
+
+  movePlayer();
+  // The enemy always moves at enemySpeed (which increases)
+  enemyVX = enemySpeed;
+  //moves every enemy
+  for(var i = 0; i < numberOfEnemies; i = i + 1){
+    // Update the enemy's position based on its velocity
+    enemyX[i] = enemyX[i] + enemyVX;
+
+    // Check if the enemy and avatar overlap - if they do the player loses
+    // We do this by checking if the distance between the centre of the enemy
+    // and the centre of the avatar is less that their combined radii
+    if (dist( enemyX[i], enemyY[i] ,avatarX,avatarY) < enemySize/2 + avatarSize/2) {
+      reset();
+    }
+  }
+  // Check if the avatar has gone off the screen (cheating!)
+  if (avatarX < 0 || avatarX > width || avatarY < 0 || avatarY > height) {
+    reset();
+  }
+
+  // Check if the enemy has moved all the way across the screen
+  if ( enemyX[0] > width) {
+    dodged();
+  }
+
+  // Display the current number of successful in the console
+  console.log(dodges);
+
+}
+// resets games
+function reset(){
+  // Tell the player they lost
+  console.log("YOU LOSE!");
+  // Reset the enemy's position
+  enemyX = [0];
+  enemyY = [random(0,height)];
+  // Reset the enemy's size and speed
+  enemySize = 50;
+  enemySpeed = 5;
+  // Reset the avatar's position
+  avatarX = width/2;
+  avatarY = height/2;
+  // Reset the dodge counter
+  dodges = 0;
+  spawnCounter = 0;
+  numberOfEnemies = 1;
+}
+//moves the player
+function movePlayer(){
   // Default the avatar's velocity to 0 in case no key is pressed this frame
   avatarVX = 0;
   avatarVY = 0;
@@ -121,58 +173,32 @@ function logic() {
   avatarX = avatarX + avatarVX;
   avatarY = avatarY + avatarVY;
 
-  // The enemy always moves at enemySpeed (which increases)
-  enemyVX = enemySpeed;
-  // Update the enemy's position based on its velocity
-  enemyX = enemyX + enemyVX;
 
-  // Check if the enemy and avatar overlap - if they do the player loses
-  // We do this by checking if the distance between the centre of the enemy
-  // and the centre of the avatar is less that their combined radii
-  if (dist(enemyX,enemyY,avatarX,avatarY) < enemySize/2 + avatarSize/2) {
-    // Tell the player they lost
-    console.log("YOU LOSE!");
-    // Reset the enemy's position
-    enemyX = 0;
-    enemyY = random(0,height);
-    // Reset the enemy's size and speed
-    enemySize = 50;
-    enemySpeed = 5;
-    // Reset the avatar's position
-    avatarX = width/2;
-    avatarY = height/2;
-    // Reset the dodge counter
-    dodges = 0;
+}
+
+//adds 1 meteor after every 5 points
+function dodged(){
+  // This means the player dodged so update its dodge statistic
+  dodges = dodges + 1;
+  spawnCounter =  spawnCounter + 1;
+  // Tell them how many dodges they have made
+  console.log(dodges + " DODGES!");
+
+  // Increase the enemy's speed to make the game harder
+  enemySpeed = enemySpeed + enemySpeedIncrease;
+//dodges 5, resets counter and spawns enemy
+  if(spawnCounter == 5){
+    spawnCounter = 0;
+    numberOfEnemies = numberOfEnemies + 1
+    enemyX.push(0);
+    enemyY.push(0);
+
   }
 
-  // Check if the avatar has gone off the screen (cheating!)
-  if (avatarX < 0 || avatarX > width || avatarY < 0 || avatarY > height) {
-    // If they went off the screen they lose in the same way as above.
-    console.log("YOU LOSE!");
-    enemyX = 0;
-    enemyY = random(0,height);
-    enemySize = 50;
-    enemySpeed = 5;
-    avatarX = width/2;
-    avatarY = height/2;
-    dodges = 0;
+  // Reset every enemy's position to the left at a random height
+  for(var i = 0; i < numberOfEnemies; i = i +1){
+    enemyX[i] = 0;
+    enemyY[i] = random(0,height);
+
   }
-
-  // Check if the enemy has moved all the way across the screen
-  if (enemyX > width) {
-    // This means the player dodged so update its dodge statistic
-    dodges = dodges + 1;
-    // Tell them how many dodges they have made
-    console.log(dodges + " DODGES!");
-    // Reset the enemy's position to the left at a random height
-    enemyX = 0;
-    enemyY = random(0,height);
-    // Increase the enemy's speed and size to make the game harder
-    enemySpeed = enemySpeed + enemySpeedIncrease;
-    enemySize = enemySize + enemySizeIncrease;
-  }
-
-  // Display the current number of successful in the console
-  console.log(dodges);
-
 }
